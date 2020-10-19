@@ -47,20 +47,14 @@
     1. 예약/결제 취소 정보가 변경 될 때마다 도서 예약 가능 여부가 변경 될 수 있어야 한다.  Event Driven
 
 
-
-
-
 # 체크포인트
 
 - 분석 설계
-
-
   - 이벤트스토밍: 
     - 스티커 색상별 객체의 의미를 제대로 이해하여 헥사고날 아키텍처와의 연계 설계에 적절히 반영하고 있는가?
     - 각 도메인 이벤트가 의미있는 수준으로 정의되었는가?
     - 어그리게잇: Command와 Event 들을 ACID 트랜잭션 단위의 Aggregate 로 제대로 묶었는가?
-    - 기능적 요구사항과 비기능적 요구사항을 누락 없이 반영하였는가?    
-
+    - 기능적 요구사항과 비기능적 요구사항을 누락 없이 반영하였는가?
   - 서브 도메인, 바운디드 컨텍스트 분리
     - 팀별 KPI 와 관심사, 상이한 배포주기 등에 따른  Sub-domain 이나 Bounded Context 를 적절히 분리하였고 그 분리 기준의 합리성이 충분히 설명되는가?
       - 적어도 3개 이상 서비스 분리
@@ -72,7 +66,6 @@
     - 장애격리: 서포팅 서비스를 제거 하여도 기존 서비스에 영향이 없도록 설계하였는가?
     - 신규 서비스를 추가 하였을때 기존 서비스의 데이터베이스에 영향이 없도록 설계(열려있는 아키택처)할 수 있는가?
     - 이벤트와 폴리시를 연결하기 위한 Correlation-key 연결을 제대로 설계하였는가?
-
   - 헥사고날 아키텍처
     - 설계 결과에 따른 헥사고날 아키텍처 다이어그램을 제대로 그렸는가?
     
@@ -107,9 +100,7 @@
     - Readiness Probe 의 설정과 Rolling update을 통하여 신규 버전이 완전히 서비스를 받을 수 있는 상태일때 신규버전의 서비스로 전환됨을 siege 등으로 증명 
     - Contract Test :  자동화된 경계 테스트를 통하여 구현 오류나 API 계약위반를 미리 차단 가능한가?
 
-
 # 분석/설계
-
 
 ## AS-IS 조직 (Horizontally-Aligned)
   ![image](https://user-images.githubusercontent.com/487999/79684144-2a893200-826a-11ea-9a01-79927d3a0107.png)
@@ -117,20 +108,16 @@
 ## TO-BE 조직 (Vertically-Aligned)
   ![image](https://user-images.githubusercontent.com/487999/79684159-3543c700-826a-11ea-8d5f-a3fc0c4cad87.png)
 
-
 ## Event Storming 결과
 * MSAEz 로 모델링한 이벤트스토밍 결과:  http://msaez.io/#/storming/nZJ2QhwVc4NlVJPbtTkZ8x9jclF2/every/a77281d704710b0c2e6a823b6e6d973a/-M5AV2z--su_i4BfQfeF
-
 
 ### 이벤트 도출
 ![image](https://user-images.githubusercontent.com/70302894/96394182-54f97f00-11fc-11eb-9100-41032900dbcf.JPG)
 
-
-
 ### 어그리게잇으로 묶기 / 액터, 커맨드 부착하여 읽기 좋게
 ![image](https://user-images.githubusercontent.com/70302894/96394196-59259c80-11fc-11eb-9127-461cd5522b87.JPG)
 
-    - 숙소 예약, 결제, 숙소 관리 등은 그와 연결된 command 와 event 들에 의하여 트랜잭션이 유지되어야 하는 단위로 묶어준다.
+    - 도서 예약, 결제, 도서 관리 등은 그와 연결된 command 와 event 들에 의하여 트랜잭션이 유지되어야 하는 단위로 묶어준다.
 
 ### 바운디드 컨텍스트로 묶기
 
@@ -139,97 +126,64 @@
     - 도메인 서열 분리 
         - 예약 : 고객 예약 오류를 최소화 한다. (Core)
         - 결제 : 결제 오류를 최소화 한다. (Supporting)
-        - 숙소 : 숙소 예약 상태 오류를 최소화 한다. (Supporting)
+        - 도서 : 도서 예약 상태 오류를 최소화 한다. (Supporting)
 
 ### 폴리시 부착 (괄호는 수행주체, 폴리시 부착을 둘째단계에서 해놔도 상관 없음. 전체 연계가 초기에 드러남)
-
 ![image](https://user-images.githubusercontent.com/70302894/96394198-5a56c980-11fc-11eb-912d-df12c1954bed.JPG)
 
 ### 폴리시의 이동과 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Resp)
-
 ![image](https://user-images.githubusercontent.com/70302894/96394199-5a56c980-11fc-11eb-8f6f-9246f8ded1e2.JPG)
 
 ### 완성된 1차 모형
-
 ![image](https://user-images.githubusercontent.com/70302894/96394200-5aef6000-11fc-11eb-807d-86c87e834f44.jpg)
 
-
-
 ### 1차 완성본에 대한 기능적/비기능적 요구사항을 커버하는지 검증
-
 ![image](https://user-images.githubusercontent.com/70302894/96394204-5c208d00-11fc-11eb-9ac7-f15fb95d5fac.jpg)
 
-    - 고객이 숙소 예약 가능 여부를 확인한다.(?)
-    - 고객이 숙소를 선택해 예약을 진행한다. (OK)
+    - 고객이 도서 예약 가능 여부를 확인한다.(?)
+    - 고객이 도서를 선택해 예약을 진행한다. (OK)
     - 예약 시 자동으로 결제가 진행된다. (OK)
-    - 결제가 성공하면 숙소가 예약불가 상태가 된다. (OK)
-    - 숙소 상태 변경 시 예약이 확정상태가 된다. (OK)    
+    - 결제가 성공하면 도서가 예약불가 상태가 된다. (OK)
+    - 도서 상태 변경 시 예약이 확정(대여가능)상태가 된다. (OK) 
     
-
-
-
-
-
-
 ![image](https://user-images.githubusercontent.com/70302894/96394205-5cb92380-11fc-11eb-8801-afefc12aa9b1.jpg)
-
 
     - 고객이 예약/결제를 취소한다. (OK)
     - 예약/결제 취소 시 자동 예약/결제 취소된다. (OK)
-    - 결제가 취소되면 숙소가 예약가능 상태가 된다. (OK)
-
-
-
-
-
+    - 결제가 취소되면 도서가 예약가능 상태가 된다. (OK)
 
 ### 모델 수정
-
 ![image](https://user-images.githubusercontent.com/70302894/96394207-5d51ba00-11fc-11eb-80d9-1d5bb4356b1a.JPG)
     
     - View Model 추가
     - 수정된 모델은 모든 요구사항을 커버함.
 
-
 ### 비기능 요구사항에 대한 검증
-
 ![image](https://user-images.githubusercontent.com/70302894/96396179-8aed3200-1201-11eb-9ef9-ff872125f76e.jpg)
 
+    - 1. 도서 등록 서비스를 예약/결제 서비스와 격리하여 도서 등록 서비스 장애 시에도 예약이 가능
+    - 2. 도서가 예약 불가 상태일 경우 예약 확정이 불가함
+    - 3. 먼저 결제가 이루어진 도서에 대해서는 예약을 불가 하도록 함.
 
-    - 1. 숙소 등록 서비스를 예약/결제 서비스와 격리하여 숙소 등록 서비스 장애 시에도 예약이 가능
-    - 2. 숙소가 예약 불가 상태일 경우 예약 확정이 불가함
-    - 3. 먼저 결제가 이루어진 숙소에 대해서는 예약을 불가 하도록 함.    
-
-
-
-
-
-
-
-
-
-## 헥사고날 아키텍처 다이어그램 도출
-    
+## 헥사고날 아키텍처 다이어그램 도출    
 ![image](https://user-images.githubusercontent.com/70302894/96400680-5763d500-120c-11eb-85c4-bf826e22cecf.JPG)
-
 
     - Chris Richardson, MSA Patterns 참고하여 Inbound adaptor와 Outbound adaptor를 구분함
     - 호출관계에서 PubSub 과 Req/Resp 를 구분함
     - 서브 도메인과 바운디드 컨텍스트의 분리:  각 팀의 KPI 별로 아래와 같이 관심 구현 스토리를 나눠가짐
-
 
 # 구현:
 
 분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 스프링부트로 구현하였다. 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 808n 이다)
 
 ```
-cd book
+cd reservation
 mvn spring-boot:run
 
 cd payment
 mvn spring-boot:run 
 
-cd house
+cd books
 mvn spring-boot:run  
 
 cd mypage
