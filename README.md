@@ -123,13 +123,13 @@
 ![image](https://user-images.githubusercontent.com/70302903/96678706-338bc500-13ad-11eb-8196-9315714cd5a3.PNG)
 
 ### 폴리시의 이동과 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Resp)
-![image](https://user-images.githubusercontent.com/70302894/96394199-5a56c980-11fc-11eb-8f6f-9246f8ded1e2.JPG)
+![image](https://user-images.githubusercontent.com/70302903/96678707-34245b80-13ad-11eb-8b02-d9d0b59baef9.PNG)
 
 ### 완성된 1차 모형
-![image](https://user-images.githubusercontent.com/70302894/96394200-5aef6000-11fc-11eb-807d-86c87e834f44.jpg)
+![image](https://user-images.githubusercontent.com/70302903/96678708-34bcf200-13ad-11eb-9d37-a46bca4061f9.PNG)
 
 ### 1차 완성본에 대한 기능적/비기능적 요구사항을 커버하는지 검증
-![image](https://user-images.githubusercontent.com/70302894/96394204-5c208d00-11fc-11eb-9ac7-f15fb95d5fac.jpg)
+![image](https://user-images.githubusercontent.com/70302903/96678710-35558880-13ad-11eb-8d21-99753fc7e889.png)
 
     - 고객이 도서 예약 가능 여부를 확인한다.(?)
     - 고객이 도서를 선택해 예약을 진행한다. (OK)
@@ -137,27 +137,25 @@
     - 결제가 성공하면 도서가 예약불가 상태가 된다. (OK)
     - 도서 상태 변경 시 예약이 확정(대여가능)상태가 된다. (OK) 
     
-![image](https://user-images.githubusercontent.com/70302894/96394205-5cb92380-11fc-11eb-8801-afefc12aa9b1.jpg)
-
     - 고객이 예약/결제를 취소한다. (OK)
     - 예약/결제 취소 시 자동 예약/결제 취소된다. (OK)
     - 결제가 취소되면 도서가 예약가능 상태가 된다. (OK)
 
 ### 모델 수정
-![image](https://user-images.githubusercontent.com/70302894/96394207-5d51ba00-11fc-11eb-80d9-1d5bb4356b1a.JPG)
+![image](https://user-images.githubusercontent.com/70302903/96678713-35ee1f00-13ad-11eb-9f00-cb8ac9f4b8a4.PNG)
     
     - View Model 추가
     - 수정된 모델은 모든 요구사항을 커버함.
 
 ### 비기능 요구사항에 대한 검증
-![image](https://user-images.githubusercontent.com/70302894/96396179-8aed3200-1201-11eb-9ef9-ff872125f76e.jpg)
+![image](https://user-images.githubusercontent.com/70302903/96678715-3686b580-13ad-11eb-9dd7-ad75ad58c508.png)
 
     - 1. 도서 등록 서비스를 예약/결제 서비스와 격리하여 도서 등록 서비스 장애 시에도 예약이 가능
     - 2. 도서가 예약 불가 상태일 경우 예약 확정이 불가함
     - 3. 먼저 결제가 이루어진 도서에 대해서는 예약을 불가 하도록 함.
 
 ## 헥사고날 아키텍처 다이어그램 도출    
-![image](https://user-images.githubusercontent.com/70302894/96400680-5763d500-120c-11eb-85c4-bf826e22cecf.JPG)
+![image](https://user-images.githubusercontent.com/70302903/96678717-371f4c00-13ad-11eb-8198-de0a4f0eed1d.png)
 
     - Chris Richardson, MSA Patterns 참고하여 Inbound adaptor와 Outbound adaptor를 구분함
     - 호출관계에서 PubSub 과 Req/Resp 를 구분함
