@@ -100,19 +100,19 @@
 # 분석/설계
 
 ## Event Storming 결과
-* MSAEz 로 모델링한 이벤트스토밍 결과:  http://msaez.io/#/storming/nZJ2QhwVc4NlVJPbtTkZ8x9jclF2/every/a77281d704710b0c2e6a823b6e6d973a/-M5AV2z--su_i4BfQfeF
+* MSAEz 로 모델링한 이벤트스토밍 결과:  http://www.msaez.io/#/storming/40aEL4esvONUyUTOd8WTe3G2N0E3/mine/25597718266cbd8f4a1a3dba7773c803/-MK7g74T3CwyIVYwZSEP
 
 ### 이벤트 도출
-![image](https://user-images.githubusercontent.com/70302894/96394182-54f97f00-11fc-11eb-9100-41032900dbcf.JPG)
+![image](https://user-images.githubusercontent.com/70302903/96678702-31c20180-13ad-11eb-8bc8-310898d2a648.PNG)
 
 ### 어그리게잇으로 묶기 / 액터, 커맨드 부착하여 읽기 좋게
-![image](https://user-images.githubusercontent.com/70302894/96394196-59259c80-11fc-11eb-9127-461cd5522b87.JPG)
+![image](https://user-images.githubusercontent.com/70302903/96678703-32f32e80-13ad-11eb-8025-0e62eeae234d.PNG)
 
     - 도서 예약, 결제, 도서 관리 등은 그와 연결된 command 와 event 들에 의하여 트랜잭션이 유지되어야 하는 단위로 묶어준다.
 
 ### 바운디드 컨텍스트로 묶기
 
-![image](https://user-images.githubusercontent.com/70302894/96394197-59be3300-11fc-11eb-9342-1106528fcb0c.JPG)
+![image](https://user-images.githubusercontent.com/70302903/96678704-338bc500-13ad-11eb-8754-20c0b3d45e2c.PNG)
 
     - 도메인 서열 분리 
         - 예약 : 고객 예약 오류를 최소화 한다. (Core)
@@ -120,7 +120,7 @@
         - 도서 : 도서 예약 상태 오류를 최소화 한다. (Supporting)
 
 ### 폴리시 부착 (괄호는 수행주체, 폴리시 부착을 둘째단계에서 해놔도 상관 없음. 전체 연계가 초기에 드러남)
-![image](https://user-images.githubusercontent.com/70302894/96394198-5a56c980-11fc-11eb-912d-df12c1954bed.JPG)
+![image](https://user-images.githubusercontent.com/70302903/96678706-338bc500-13ad-11eb-8196-9315714cd5a3.PNG)
 
 ### 폴리시의 이동과 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Resp)
 ![image](https://user-images.githubusercontent.com/70302894/96394199-5a56c980-11fc-11eb-8f6f-9246f8ded1e2.JPG)
