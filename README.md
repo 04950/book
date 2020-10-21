@@ -125,60 +125,113 @@ mvn spring-boot:run
 cd mypage
 mvn spring-boot:run  
 ```
+게이트웨이 내부에서 spring, docker 환경에 따른 각 서비스 uri를 설정해주고 있다.
+
+```
+spring:
+  profiles: default
+  cloud:
+    gateway:
+      routes:
+        - id: ask
+          uri: http://localhost:8081
+          predicates:
+            - Path=/asks/** 
+        - id: pay
+          uri: http://localhost:8082
+          predicates:
+            - Path=/pays/** 
+        - id: book
+          uri: http://localhost:8083
+          predicates:
+            - Path=/books/** 
+        - id: mypage
+          uri: http://localhost:8084
+          predicates:
+            - Path= /mypages/**
+.....생략
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: ask
+          uri: http://ask:8080
+          predicates:
+            - Path=/asks/** 
+        - id: pay
+          uri: http://pay:8080
+          predicates:
+            - Path=/pays/** 
+        - id: book
+          uri: http://book:8080
+          predicates:
+            - Path=/books/** 
+        - id: mypage
+          uri: http://mypage:8080
+          predicates:
+            - Path= /mypages/**
+...
+```
 
 ## DDD 의 적용
 
 - 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다. 
 
 ```
-package fooddelivery;
+package bookrental;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
 import java.util.List;
 
 @Entity
-@Table(name="결제이력_table")
-public class 결제이력 {
+@Table(name="Ask_table")
+public class Ask {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-    private String orderId;
-    private Double 금액;
+    private String status;
+    private Long bookId;
+    
+    .../... 중략  .../...
 
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
-    public String getOrderId() {
-        return orderId;
+    public String getStatus() {
+        return status;
     }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setStatus(String status) {
+        this.status = status;
     }
-    public Double get금액() {
-        return 금액;
+    public Long getBookId() {
+        return bookId;
     }
-
-    public void set금액(Double 금액) {
-        this.금액 = 금액;
+    public void setBookId(Long bookId) {
+        this.bookId = bookId;
     }
-
+    public String getAskDate() {
+        return askDate;
+    }
+    .../... 중략  .../...
 }
 
 ```
 - Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위하여 Spring Data REST 의 RestRepository 를 적용하였다
 ```
-package fooddelivery;
+package bookrental;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface 결제이력Repository extends PagingAndSortingRepository<결제이력, Long>{
+public interface AskRepository extends PagingAndSortingRepository<Ask, Long>{
 }
 ```
 - 적용 후 REST API 의 테스트
