@@ -335,94 +335,69 @@ public interface PayService {
 ```
 # 결제 (pay) 서비스를 잠시 내려놓음 (ctrl+c)
 
-#주문처리
-http localhost:8081/orders item=통닭 storeId=1   #Fail
-http localhost:8081/orders item=피자 storeId=2   #Fail
+#신청처리
+http ask:8080/asks #Fail
 
 #결제서비스 재기동
-cd 결제
+cd pay
 mvn spring-boot:run
 
-#주문처리
-http localhost:8081/orders item=통닭 storeId=1   #Success
-http localhost:8081/orders item=피자 storeId=2   #Success
+#신청처리
+http ask:8080/asks #Fail   #Success
 ```
 
 - 또한 과도한 요청시에 서비스 장애가 도미노 처럼 벌어질 수 있다. (서킷브레이커, 폴백 처리는 운영단계에서 설명한다.)
 
 
-
-
 ## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
 
-
-결제가 이루어진 후에 숙소에 이를 알려주는 행위는 동기식이 아니라 비 동기식으로 처리하여 숙소 시스템의 처리를 위하여 결제주문이 블로킹 되지 않아도록 처리한다.
+결제가 이루어진 후에 도서에 이를 알려주는 행위는 동기식이 아니라 비 동기식으로 처리하여 도서 시스템의 처리를 위하여 결제주문이 블로킹 되지 않아도록 처리한다.
  
-- 이를 위하여 결제이력에 기록을 남긴 후에 곧바로 결제승인이 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
+- 이를 위하여 결제이력에 기록을 남긴 후에 곧바로 승인이 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
  
 ```
-package fooddelivery;
+    @PostPersist
+    public void onPostPersist(){
 
-@Entity
-@Table(name="결제이력_table")
-public class 결제이력 {
+        ApprovalObtained approvalObtained = new ApprovalObtained();
+        BeanUtils.copyProperties(this, approvalObtained);
+        approvalObtained.publishAfterCommit();
 
- ...
-    @PrePersist
-    public void onPrePersist(){
-        결제승인됨 결제승인됨 = new 결제승인됨();
-        BeanUtils.copyProperties(this, 결제승인됨);
-        결제승인됨.publish();
     }
-
-}
 ```
-- 숙소 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
+- 도서 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
 
 ```
-package fooddelivery;
-
-...
-
-@Service
-public class PolicyHandler{
-
     @StreamListener(KafkaProcessor.INPUT)
-    public void whenever결제승인됨_주문정보받음(@Payload 결제승인됨 결제승인됨){
+    public void wheneverPaid_Rent(@Payload Paid paid){
 
-        if(결제승인됨.isMe()){
-            System.out.println("##### listener 주문정보받음 : " + 결제승인됨.toJson());
-            // 주문 정보를 받았으니, 요리를 슬슬 시작해야지..
-            
+        if(paid.isMe()){
+            System.out.println("##### listener Rent : " + paid.toJson());
+
+            Optional<Book> optional = bookRepository.findById(paid.getBookId());
+            Book book = optional.get();
+            book.setAskId(paid.getAskId());
+            book.setStatus("RENTED");
+
+            bookRepository.save(book);
         }
     }
 
-}
-
-```
-  
 ```
 
-
+도서 시스템은 신청/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 신청/결제 시스템이 유지보수로 인해 잠시 내려간 상태라도 숙소를 등록하는데 문제가 없다:
 ```
+# 결제 (pay) 서비스를 잠시 내려놓음 (ctrl+c)
 
-숙소 시스템은 예약/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 예약/결제 시스템이 유지보수로 인해 잠시 내려간 상태라도 숙소를 등록하는데 문제가 없다:
-```
-# 상점 서비스 (store) 를 잠시 내려놓음 (ctrl+c)
+#신청처리
+http ask:8080/asks #Fail
 
-#주문처리
-http localhost:8081/orders item=통닭 storeId=1   #Success
-http localhost:8081/orders item=피자 storeId=2   #Success
-
-#주문상태 확인
-http localhost:8080/orders     # 주문상태 안바뀜 확인
-
-#상점 서비스 기동
-cd 상점
+#결제서비스 재기동
+cd pay
 mvn spring-boot:run
 
-#주문상태 확인
-http localhost:8080/orders     # 모든 주문의 상태가 "배송됨"으로 확인
+#신청처리
+http ask:8080/asks #Fail   #Success
 ```
 
 
@@ -435,28 +410,13 @@ http localhost:8080/orders     # 모든 주문의 상태가 "배송됨"으로 �
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
 
-* 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함
+* 서킷 브레이킹 : istio destination 룰 적용하여 구현한다.
 
-시나리오는 단말앱(app)-->결제(pay) 시의 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 결제 요청이 과도할 경우 CB 를 통하여 장애격리.
-
-- Hystrix 를 설정:  요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
-```
-# application.yml
-feign:
-  hystrix:
-    enabled: true
-    
-hystrix:
-  command:
-    # 전역설정
-    default:
-      execution.isolation.thread.timeoutInMilliseconds: 610
-
-```
+시나리오는 대여신청(ask)-->결제(pay) 시의 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 결제 요청이 과도할 경우 CB 를 통하여 장애격리.
 
 - 피호출 서비스(결제:pay) 의 임의 부하 처리 - 400 밀리에서 증감 220 밀리 정도 왔다갔다 하게
 ```
-# (pay) 결제이력.java (Entity)
+# (pay) Pay.java (Entity)
 
     @PrePersist
     public void onPrePersist(){  //결제이력을 저장한 후 적당한 시간 끌기
@@ -465,6 +425,7 @@ hystrix:
         
         try {
             Thread.currentThread().sleep((long) (400 + Math.random() * 220));
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
