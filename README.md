@@ -385,16 +385,9 @@ http ask:8080/asks #Fail   #Success
 
 ```
 
-도서 시스템은 신청/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 신청/결제 시스템이 유지보수로 인해 잠시 내려간 상태라도 숙소를 등록하는데 문제가 없다:
+도서 시스템은 신청/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 신청/결제 시스템이 유지보수로 인해 잠시 내려간 상태라도 도서를 등록하는데 문제가 없다:
 ```
 # 도서 (book) 서비스를 잠시 내려놓음 (ctrl+c)
-
-#신청처리
-http ask:8080/asks #Success
-
-#결제서비스 재기동
-cd pay
-mvn spring-boot:run
 
 #신청처리
 http ask:8080/asks #Success
@@ -402,12 +395,12 @@ http ask:8080/asks #Success
 #Book 상태 확인
 http book:8081/books     # 상태 안바뀜 확인
 
-#승인서비스 기동
+#도서서비스 기동
 cd book
 mvn spring-boot:run
 
-#오더상태 확인
-http book:8081/books     # 상태가 "APPROVED"으로 확인
+#Book 상태 확인
+http book:8081/books     # 상태가 신청상태로 변경 확인
 ```
 
 
@@ -490,15 +483,15 @@ EOF
 
 - 결제서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다:
 ```
-kubectl autoscale deploy pay --min=1 --max=10 --cpu-percent=15
+kubectl autoscale deploy ask --min=1 --max=10 --cpu-percent=15
 ```
 - CB 에서 했던 방식대로 워크로드를 2분 동안 걸어준다.
 ```
-siege -c100 -t120S -r10 --content-type "application/json" 'http://localhost:8081/orders POST {"item": "chicken"}'
+siege -c20 -t120S -v  --content-type "application/json" 'http://ask:8080/asks POST {"id":"1","status":"ASKED" }'
 ```
 - 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
 ```
-kubectl get deploy pay -w
+kubectl get deploy ask -w
 ```
 - 어느정도 시간이 흐른 후 (약 30초) 스케일 아웃이 벌어지는 것을 확인할 수 있다:
 ![image](https://user-images.githubusercontent.com/70302903/96833042-baf33a00-147a-11eb-84b6-c2dadb2b47dd.PNG)
