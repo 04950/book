@@ -411,7 +411,7 @@ http book:8081/books     # 상태가 신청상태로 변경 확인
 
 각 구현체들은 각자의 source repository 에 구성되었고, 사용한 CI/CD 플랫폼은 AWS CodeBuild를 사용하였으며, pipeline build script 는 각 프로젝트 폴더 이하에 buildspec.yml 에 포함되었다.
 
-![image]()
+![image](ttps://user-images.githubusercontent.com/70302903/96839389-1544c880-1484-11eb-9b6d-338c57206963.PNG)
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
 
