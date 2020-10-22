@@ -307,7 +307,7 @@ public interface PayService {
 }
 ```
 
-- 주문을 받은 직후(@PostPersist) 결제를 요청하도록 처리
+- 신을 받은 직후(@PostPersist) 결제를 요청하도록 처리
 ```
 # Ask.java (Entity)
 
@@ -387,17 +387,27 @@ http ask:8080/asks #Fail   #Success
 
 도서 시스템은 신청/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 신청/결제 시스템이 유지보수로 인해 잠시 내려간 상태라도 숙소를 등록하는데 문제가 없다:
 ```
-# 결제 (pay) 서비스를 잠시 내려놓음 (ctrl+c)
+# 도서 (book) 서비스를 잠시 내려놓음 (ctrl+c)
 
 #신청처리
-http ask:8080/asks #Fail
+http ask:8080/asks #Success
 
 #결제서비스 재기동
 cd pay
 mvn spring-boot:run
 
 #신청처리
-http ask:8080/asks #Fail   #Success
+http ask:8080/asks #Success
+
+#Book 상태 확인
+http book:8081/books     # 상태 안바뀜 확인
+
+#승인서비스 기동
+cd book
+mvn spring-boot:run
+
+#오더상태 확인
+http book:8081/books     # 상태가 "APPROVED"으로 확인
 ```
 
 
