@@ -537,7 +537,7 @@ kubectl apply -f kubernetes/deployment.yaml
 
 - configmap 생성
 
-![image]()
+![image](https://user-images.githubusercontent.com/70302903/96834851-a95f6180-147d-11eb-8573-056f47c57538.PNG)
 
 - house deployment를 위에서 생성한 house-region(cm)의 값을 사용 할 수 있도록 수정한다.
 
@@ -578,4 +578,4 @@ metadata:
 
 - describe로 생성 확인
 
-![image]()
+![image](https://user-images.githubusercontent.com/70302903/96834854-aa908e80-147d-11eb-88d8-b1be836ec756.PNG)
