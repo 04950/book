@@ -239,25 +239,27 @@ public interface AskRepository extends PagingAndSortingRepository<Ask, Long>{
 # book 서비스의 등록처리
 http ask:8080/asks id=20 status=ASKED bookId=11
 ```
-![image]()
+![image](https://user-images.githubusercontent.com/70302903/96830053-b7a97f80-1475-11eb-82a8-2f67b4eeb149.PNG)
 
 ```
 # ask 서비스의 대여신청처리
 http post  ask:8080/asks id=1 status="ASKED"
 ```
-![image]()
+![image](https://user-images.githubusercontent.com/70302903/96830054-b7a97f80-1475-11eb-9619-479e26f12d3b.PNG)
 
 ```
-# 도서대여 상태 확인
-http get mypage:8080/mypages
-```
-![image]()
-
-```
-# 도서 상태 조회(CQRS)
+# 도서 상태 조회
 http get book:8080/books
 ```
-![image]()
+![image](https://user-images.githubusercontent.com/70302903/96830046-b5dfbc00-1475-11eb-955d-e938311388a0.PNG)
+![image](https://user-images.githubusercontent.com/70302903/96830048-b6785280-1475-11eb-8c4c-062c628e27d9.PNG)
+
+```
+# 도서 대여상태 조회(CQRS)
+http get mypage:8080/mypages
+```
+![image](https://user-images.githubusercontent.com/70302903/96830050-b710e900-1475-11eb-9daf-cba29c667631.PNG)
+![image](https://user-images.githubusercontent.com/70302903/96830052-b710e900-1475-11eb-8760-2a616c15b06a.PNG)
 
 ## 폴리글랏 퍼시스턴스
 
@@ -281,9 +283,6 @@ http get book:8080/books
 
 
 ```
-
-
-
 
 ## 동기식 호출 과 Fallback 처리
 
@@ -332,7 +331,6 @@ public interface PayService {
 ```
 
 - 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
-
 
 ```
 # 결제 (pay) 서비스를 잠시 내려놓음 (ctrl+c)
