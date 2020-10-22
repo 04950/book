@@ -432,7 +432,7 @@ http ask:8080/asks #Fail   #Success
     }
 ```
 서킷브레이킹 미적용 시 100%임을 확인:
-![image]()
+![image](https://user-images.githubusercontent.com/70302903/96833046-bc246700-147a-11eb-8c30-7062702961d5.PNG)
 
 데스티네이션 룰 적용c
 ```
@@ -462,15 +462,16 @@ EOF
 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인:
 동시사용자 20명
 20초 동안 실시
-
-![image]()
+![image](https://user-images.githubusercontent.com/70302903/96833027-b7f84980-147a-11eb-9d0b-cbd748ec51c4.PNG)
+![image](https://user-images.githubusercontent.com/70302903/96833029-b9297680-147a-11eb-9a25-1c6e4c608a70.PNG)
+![image](https://user-images.githubusercontent.com/70302903/96833031-b9297680-147a-11eb-82f3-54f55b08cfdf.PNG)
 
 운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌.
 
 키알리 확인
-![image]()
+![image](https://user-images.githubusercontent.com/70302903/96833037-b9c20d00-147a-11eb-9b17-f317d6e2dd5c.PNG)
 예거 확인
-![image]()
+![image](https://user-images.githubusercontent.com/70302903/96833035-b9c20d00-147a-11eb-9ec9-4335f6f7e30d.PNG)
 
 
 ### 오토스케일 아웃
@@ -489,10 +490,11 @@ siege -c100 -t120S -r10 --content-type "application/json" 'http://localhost:8081
 kubectl get deploy pay -w
 ```
 - 어느정도 시간이 흐른 후 (약 30초) 스케일 아웃이 벌어지는 것을 확인할 수 있다:
-![image]()
+![image](https://user-images.githubusercontent.com/70302903/96833042-baf33a00-147a-11eb-84b6-c2dadb2b47dd.PNG)
 
 - siege 의 로그를 보아도 전체적인 성공률이 높아진 것을 확인 할 수 있다. 
-![image]()
+![image](https://user-images.githubusercontent.com/70302903/96833040-ba5aa380-147a-11eb-8a3f-b2c7bdbb9c55.PNG)
+![image](https://user-images.githubusercontent.com/70302903/96833041-baf33a00-147a-11eb-8d7a-e0f5076fb7c4.PNG)
 
 ## 무정지 재배포
 
@@ -520,7 +522,7 @@ kubectl set image ...
 ```
 
 - seige 의 화면으로 넘어가서 Availability 가 100% 미만으로 떨어졌는지 확인
-![image]()
+![image](https://user-images.githubusercontent.com/70302903/96833044-bb8bd080-147a-11eb-81a2-694611887a28.PNG)
  
 배포기간중 Availability 가 평소 100%에서 70% 대로 떨어지는 것을 확인. 원인은 쿠버네티스가 성급하게 새로 올려진 서비스를 READY 상태로 인식하여 서비스 유입을 진행한 것이기 때문. 이를 막기위해 Readiness Probe 를 설정함:
 
@@ -531,6 +533,6 @@ kubectl apply -f kubernetes/deployment.yaml
 ```
 
 - 동일한 시나리오로 재배포 한 후 Availability 확인:
-![image]()
+![image]((https://user-images.githubusercontent.com/70302903/96833043-bb8bd080-147a-11eb-8c9d-950f6410c164.PNG)
 
 배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
