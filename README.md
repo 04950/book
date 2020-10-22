@@ -91,7 +91,7 @@
 ### 모델 수정
 ![image](https://user-images.githubusercontent.com/70302903/96678713-35ee1f00-13ad-11eb-9f00-cb8ac9f4b8a4.PNG)
     
-    - View Model 추가
+    - View Model 추가(CQRS 적용)
     - 수정된 모델은 모든 요구사항을 커버함.
 
 ### 비기능 요구사항에 대한 검증
