@@ -542,27 +542,26 @@ kubectl apply -f kubernetes/deployment.yaml
 - house deployment를 위에서 생성한 house-region(cm)의 값을 사용 할 수 있도록 수정한다.
 
 ```
-configmap내용을 deployment에 적용
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bookrental
+  name: book
   labels:
-    app: bookrental
+    app: book
 ...
     spec:
       containers:
-        - name: bookrental
+        - name: book
           env:                                                 ##### 컨테이너에서 사용할 환경 변수 설정
-            - name: BOOK
+            - name: COUNTRY
               valueFrom:
                 configMapKeyRef:
-                  name: bookrental-category
-                  key: bookrental
-            - name: CATEGORY
+                  name: book-region
+                  key: country
+            - name: REGION
               valueFrom:
                 configMapKeyRef:
-                  name: bookrental-category
+                  name: book-region
                   key: region
           volumeMounts:                                                 ##### CM볼륨을 바인딩
           - name: config
@@ -572,7 +571,7 @@ metadata:
       volumes:                                                 ##### CM 볼륨 
       - name: config
         configMap:
-          name: bookrental-category
+          name: book-region
 
 ```
 
