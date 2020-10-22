@@ -237,7 +237,7 @@ public interface AskRepository extends PagingAndSortingRepository<Ask, Long>{
 - 적용 후 REST API 의 테스트
 ```
 # book 서비스의 등록처리
-http ask:8080/asks id=20 status=ASKED bookId=11
+http book:8080/books id=13 status=WATING bookName=1234
 ```
 ![image](https://user-images.githubusercontent.com/70302903/96830053-b7a97f80-1475-11eb-82a8-2f67b4eeb149.PNG)
 
