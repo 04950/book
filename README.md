@@ -236,17 +236,28 @@ public interface AskRepository extends PagingAndSortingRepository<Ask, Long>{
 ```
 - 적용 후 REST API 의 테스트
 ```
-# app 서비스의 주문처리
-http localhost:8081/orders item="통닭"
-
-# store 서비스의 배달처리
-http localhost:8083/주문처리s orderId=1
-
-# 주문 상태 확인
-http localhost:8081/orders/1
+# book 서비스의 등록처리
+http ask:8080/asks id=20 status=ASKED bookId=11
+```
+![image]()
 
 ```
+# ask 서비스의 대여신청처리
+http post  ask:8080/asks id=1 status="ASKED"
+```
+![image]()
 
+```
+# 도서대여 상태 확인
+http get mypage:8080/mypages
+```
+![image]()
+
+```
+# 도서 상태 조회(CQRS)
+http get book:8080/books
+```
+![image]()
 
 ## 폴리글랏 퍼시스턴스
 
@@ -281,32 +292,43 @@ http localhost:8081/orders/1
 - 결제서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
 
 ```
-# (app) 결제이력Service.java
+# (ask) PayService.java
 
-package fooddelivery.external;
+package bookrental.external;
 
-@FeignClient(name="pay", url="http://localhost:8082")//, fallback = 결제이력ServiceFallback.class)
-public interface 결제이력Service {
+@FeignClient(name="pay", url="http://pay:8080")
+public interface PayService {
 
-    @RequestMapping(method= RequestMethod.POST, path="/결제이력s")
-    public void 결제(@RequestBody 결제이력 pay);
+    @RequestMapping(method= RequestMethod.POST, path="/pays")
+    public void pay(@RequestBody Pay pay);
+
+    @RequestMapping(method= RequestMethod.POST, path="/pays/{askId}")
+    public void payCancel(@RequestBody Pay pay, @PathVariable("bookId") Long bookId);
 
 }
 ```
 
 - 주문을 받은 직후(@PostPersist) 결제를 요청하도록 처리
 ```
-# Order.java (Entity)
+# Ask.java (Entity)
 
-    @PostPersist
+    @PostPersist 
     public void onPostPersist(){
 
-        fooddelivery.external.결제이력 pay = new fooddelivery.external.결제이력();
-        pay.setOrderId(getOrderId());
-        
-        Application.applicationContext.getBean(fooddelivery.external.결제이력Service.class)
-                .결제(pay);
-    }
+        if (this.getStatus().equals("ASKED")) {
+            Asked asked = new Asked();
+            BeanUtils.copyProperties(this, asked);
+            asked.publishAfterCommit();
+
+            bookrental.external.Pay pay = new bookrental.external.Pay();
+            // mappings goes here
+            pay.setaskId(this.getId());
+            pay.getBookId(this.getBookId());
+            pay.setStatus(this.getStatus());
+            AskApplication.applicationContext.getBean(bookrental.external.PayService.class)
+                    .pay(pay);
+        }
+    }    
 ```
 
 - 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
