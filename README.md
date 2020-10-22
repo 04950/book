@@ -538,6 +538,12 @@ kubectl apply -f kubernetes/deployment.yaml
 
 # configmap
 
+book 서비스의 경우, 국가와 지역에 따라 설정이 변할 수도 있음을 가정할 수 있다.
+configmap에 설정된 국가와 지역 설정을 book 서비스에서 받아 사용 할 수 있도록 한다.
+
+아래와 같이 configmap을 생성한다.
+data 필드에 보면 country와 region정보가 설정 되어있다.
+
 - configmap 생성
 
 ![image](https://user-images.githubusercontent.com/70302903/96834851-a95f6180-147d-11eb-8573-056f47c57538.PNG)
