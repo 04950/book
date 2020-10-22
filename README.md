@@ -531,3 +531,51 @@ kubectl apply -f kubernetes/deployment.yaml
 ![image](https://user-images.githubusercontent.com/70302903/96833043-bb8bd080-147a-11eb-8c9d-950f6410c164.PNG)
 
 배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
+
+
+# configmap
+
+- configmap 생성
+
+![image]()
+
+- house deployment를 위에서 생성한 house-region(cm)의 값을 사용 할 수 있도록 수정한다.
+
+```
+configmap내용을 deployment에 적용
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookrental
+  labels:
+    app: bookrental
+...
+    spec:
+      containers:
+        - name: bookrental
+          env:                                                 ##### 컨테이너에서 사용할 환경 변수 설정
+            - name: BOOK
+              valueFrom:
+                configMapKeyRef:
+                  name: bookrental-category
+                  key: bookrental
+            - name: CATEGORY
+              valueFrom:
+                configMapKeyRef:
+                  name: bookrental-category
+                  key: region
+          volumeMounts:                                                 ##### CM볼륨을 바인딩
+          - name: config
+            mountPath: "/config"
+            readOnly: true
+...
+      volumes:                                                 ##### CM 볼륨 
+      - name: config
+        configMap:
+          name: bookrental-category
+
+```
+
+- describe로 생성 확인
+
+![image]()
