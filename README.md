@@ -505,30 +505,24 @@ kubectl get deploy pay -w
 ```
 siege -c20 -t120S -v  --content-type "application/json" 'http://ask:8080/asks POST {"id":"1","status":"ASKED" }'
 
-** SIEGE 4.0.5
-** Preparing 100 concurrent users for battle.
-The server is now under siege...
-
-HTTP/1.1 201     0.68 secs:     207 bytes ==> POST http://localhost:8081/orders
-HTTP/1.1 201     0.68 secs:     207 bytes ==> POST http://localhost:8081/orders
-HTTP/1.1 201     0.70 secs:     207 bytes ==> POST http://localhost:8081/orders
-HTTP/1.1 201     0.70 secs:     207 bytes ==> POST http://localhost:8081/orders
-:
-```
-![image]()
-
-- 새버전으로의 배포 시작
-```
-kubectl set image ...
 ```
 
 - seige 의 화면으로 넘어가서 Availability 가 100% 미만으로 떨어졌는지 확인
 ![image](https://user-images.githubusercontent.com/70302903/96833044-bb8bd080-147a-11eb-81a2-694611887a28.PNG)
  
-배포기간중 Availability 가 평소 100%에서 70% 대로 떨어지는 것을 확인. 원인은 쿠버네티스가 성급하게 새로 올려진 서비스를 READY 상태로 인식하여 서비스 유입을 진행한 것이기 때문. 이를 막기위해 Readiness Probe 를 설정함:
+배포기간중 Availability 가 평소 100%에서 90% 대로 떨어지는 것을 확인. 원인은 쿠버네티스가 성급하게 새로 올려진 서비스를 READY 상태로 인식하여 서비스 유입을 진행한 것이기 때문. 이를 막기위해 Readiness Probe 를 설정함:
 
 ```
 # deployment.yaml 의 readiness probe 의 설정:
+
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
 
 kubectl apply -f kubernetes/deployment.yaml
 ```
