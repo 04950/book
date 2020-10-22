@@ -432,6 +432,7 @@ http ask:8080/asks #Fail   #Success
     }
 ```
 서킷브레이킹 미적용 시 100%임을 확인:
+
 ![image](https://user-images.githubusercontent.com/70302903/96833046-bc246700-147a-11eb-8c30-7062702961d5.PNG)
 
 데스티네이션 룰 적용c
@@ -533,6 +534,6 @@ kubectl apply -f kubernetes/deployment.yaml
 ```
 
 - 동일한 시나리오로 재배포 한 후 Availability 확인:
-![image]((https://user-images.githubusercontent.com/70302903/96833043-bb8bd080-147a-11eb-8c9d-950f6410c164.PNG)
+![image](https://user-images.githubusercontent.com/70302903/96833043-bb8bd080-147a-11eb-8c9d-950f6410c164.PNG)
 
 배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
